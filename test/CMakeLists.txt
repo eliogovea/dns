@@ -1,6 +1,6 @@
 find_package(GTest REQUIRED)
 
-add_executable(unit_tests name_test.cpp decode_test.cpp)
+add_executable(unit_tests name_test.cpp decode_test.cpp encode_test.cpp)
 
 target_link_libraries(
     unit_tests 
