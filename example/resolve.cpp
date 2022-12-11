@@ -18,14 +18,14 @@ void HexDump(std::ostream& output, const std::span<const std::uint8_t>& data) {
 
     for (std::size_t i = 0; i < data.size(); i++) {
         if (i != 0 && i % BytesPerLine == 0) {
-            std::cout << "\n";
+            output << "\n";
         }
 
-        std::cout << std::hex                             //
-                  << std::setw(2)                         //
-                  << std::setfill('0')                    //
-                  << static_cast<std::uint16_t>(data[i])  //
-                  << " ";                                 //
+        output << std::hex                             //
+               << std::setw(2)                         //
+               << std::setfill('0')                    //
+               << static_cast<std::uint16_t>(data[i])  //
+               << " ";                                 //
     }
 }
 
