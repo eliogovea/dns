@@ -18,36 +18,38 @@ add_test(
   COMMAND unit_tests
 )
 
-add_executable(name_fuzzer name_fuzzer.cpp)
+if (DNS_BUILD_FUZZ_TESTS)
+    add_executable(name_fuzzer name_fuzzer.cpp)
 
-target_link_libraries(
-  name_fuzzer
-    PRIVATE dns::dns
-            -coverage
-            -fsanitize=fuzzer,undefined,address
-)
+    target_link_libraries(
+      name_fuzzer
+        PRIVATE dns::dns
+                -coverage
+                -fsanitize=fuzzer,undefined,address
+    )
 
-target_compile_options(
-  name_fuzzer 
-    PRIVATE -fsanitize=fuzzer,undefined,address
-            -Wall 
-            -Wextra 
-            -Wpedantic
-)
+    target_compile_options(
+      name_fuzzer 
+        PRIVATE -fsanitize=fuzzer,undefined,address
+                -Wall 
+                -Wextra 
+                -Wpedantic
+    )
 
-add_executable(decode_fuzzer decode_fuzzer.cpp)
+    add_executable(decode_fuzzer decode_fuzzer.cpp)
 
-target_link_libraries(
-  decode_fuzzer
-    PRIVATE dns::dns
-            -coverage
-            -fsanitize=fuzzer,undefined,address
-)
+    target_link_libraries(
+      decode_fuzzer
+        PRIVATE dns::dns
+                -coverage
+                -fsanitize=fuzzer,undefined,address
+    )
 
-target_compile_options(
-  decode_fuzzer 
-    PRIVATE -fsanitize=fuzzer,undefined,address
-            -Wall 
-            -Wextra 
-            -Wpedantic
-)
+    target_compile_options(
+      decode_fuzzer 
+        PRIVATE -fsanitize=fuzzer,undefined,address
+                -Wall 
+                -Wextra 
+                -Wpedantic
+    )
+endif(DNS_BUILD_FUZZ_TESTS)

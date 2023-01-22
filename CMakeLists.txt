@@ -30,6 +30,8 @@ target_compile_options(
     PRIVATE -Wall -Wextra -Wpedantic
 )
 
+option(DNS_BUILD_FUZZ_TESTS "Build fuzz tests" OFF)
+
 enable_testing()
 include(CTest)
 add_subdirectory(test)
