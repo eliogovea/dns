@@ -39,8 +39,9 @@ void Print(const std::span<const std::uint8_t>& message_data, const DNS::Record&
     std::cout << "name:\n";
     HexDump(std::cout, DNS::ToNameView(record.name));
     std::cout << "\n";
-    std::array<std::uint8_t, DNS::NameMaxSize> unpacked_name;
-    auto unpacked_name_end =                                                      //
+    std::array<std::uint8_t, DNS::NameMaxSize> unpacked_name = {};
+
+    const auto* unpacked_name_end =                                               //
       DNS::UnpackName(message_data,                                               //
                       DNS::ToNameView(record.name).data() - message_data.data(),  //
                       unpacked_name);
@@ -54,7 +55,7 @@ void Print(const std::span<const std::uint8_t>& message_data, const DNS::Record&
     std::cout << "\n";
 
     if (record.type == DNS::TypeCNAME) {
-        auto unpacked_name_end =                                                            //
+        const auto* unpacked_name_end =                                                     //
           DNS::UnpackName(message_data,                                                     //
                           DNS::ToRecordDataView(record.data).data() - message_data.data(),  //
                           unpacked_name);
@@ -89,23 +90,31 @@ void Print(const std::span<const std::uint8_t>& message_data, const DNS::Message
 }
 
 int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cout << "usage: " << argv[0] << " DOMAIN_NAME\n";
+        std::quick_exit(EXIT_SUCCESS);
+    }
+
+    constexpr auto DnsServerIpv4 = uint32_t {0x08080808};
+    constexpr auto DnsServerPort = uint32_t {53};
+
     sockaddr_in server {};
     server.sin_family = AF_INET;
-    server.sin_addr   = {ntohl(0x08080808)};
-    server.sin_port   = ntohs(std::uint16_t {53});
+    server.sin_addr   = {ntohl(DnsServerIpv4)};
+    server.sin_port   = ntohs(std::uint16_t {DnsServerPort});
 
-    auto fd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (fd == -1) {
+    auto socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (socket_fd == -1) {
         std::cout << "failed to create socket\n";
-        exit(EXIT_FAILURE);
+        std::quick_exit(EXIT_FAILURE);
     }
 
-    if (connect(fd, reinterpret_cast<const sockaddr*>(&server), sizeof(server)) != 0) {
+    if (connect(socket_fd, reinterpret_cast<const sockaddr*>(&server), sizeof(server)) != 0) {  // NOLINT
         std::cout << "failed to connect to server\n";
-        exit(EXIT_FAILURE);
+        std::quick_exit(EXIT_FAILURE);
     }
 
-    std::array<std::uint8_t, DNS::UpdMessageMaxSize> message;
+    std::array<std::uint8_t, DNS::UpdMessageMaxSize> message = {};
 
     {
         // clang-format off
@@ -113,37 +122,37 @@ int main(int argc, char* argv[]) {
             0x0001,                          
             DNS::FlagsMaskRecursionDesired, 
             DNS::Question {
-                DNS::DotsToName("www.bing.com"),
+                DNS::DotsToName(argv[1]),
                 DNS::TypeA,                         
                 DNS::ClassIN                        
             }                                     
         };
         // clang-format on
 
-        auto query_end  = DNS::Encode(message.data(), query);
-        auto query_data = std::span<const std::uint8_t>(message.data(), query_end);
+        const auto* query_end = DNS::Encode(message.data(), query);
+        const auto query_data = std::span<const std::uint8_t>(message.data(), query_end);
 
         std::cout << "query (" << query_data.size() << "):\n";
         HexDump(std::cout, query_data);
         std::cout << "\n";
 
-        auto bytes_sent = send(fd, query_data.data(), query_data.size(), 0);
+        const auto bytes_sent = send(socket_fd, query_data.data(), query_data.size(), 0);
 
         if (bytes_sent == -1) {
             std::cout << "failed to send\n";
-            exit(EXIT_FAILURE);
+            std::quick_exit(EXIT_SUCCESS);
         }
 
         std::cout << "bytes_sent: " << std::dec << bytes_sent << "\n";
     }
 
     {
-        auto bytes_recv = recv(fd, message.data(), message.size(), 0);
+        const auto bytes_recv = recv(socket_fd, message.data(), message.size(), 0);
         std::cout << "bytes_recv: " << std::dec << bytes_recv << "\n";
 
         if (bytes_recv == -1) {
             std::cout << "failed to recv\n";
-            exit(EXIT_FAILURE);
+            std::quick_exit(EXIT_FAILURE);
         }
 
         auto answer_data = std::span<const std::uint8_t>(message.data(), bytes_recv);
@@ -153,8 +162,8 @@ int main(int argc, char* argv[]) {
         std::cout << "\n";
 
         DNS::Message answer;
-        auto answer_end = DNS::Decode(answer_data.data(), &answer);
+        const auto* answer_end = DNS::Decode(answer_data.data(), &answer);
 
-        Print(answer_data, answer);
+        Print(std::span<const std::uint8_t>(message.data(), answer_end), answer);
     }
 }

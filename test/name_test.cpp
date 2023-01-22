@@ -3,8 +3,9 @@
 #include <dns/name.hpp>
 
 TEST(dns_name_compression, read_compression_pointer) {
-    std::vector<uint8_t> data = {0xc0, 0x0C};
-    auto value                = DNS::ReadNamePointer(data.data());
+    const std::vector<uint8_t> PointerToQuestion = {0xc0, 0x0c};
+
+    auto value = DNS::ReadNamePointer(PointerToQuestion.data());
     EXPECT_EQ(value, 0x0C);
 }
 
@@ -14,7 +15,7 @@ TEST(dns_name, skip_name_without_compression) {
       0x03, 'x', 'y', 'z',  //
       0x00                  //
     };
-    auto name_end = DNS::SkipName(name);
+    const auto* name_end = DNS::SkipName(name);
     EXPECT_EQ(name_end - name.data(), name.size());
 }
 
@@ -25,7 +26,7 @@ TEST(dns_name, unpacke_name_without_compression) {
 
     std::vector<uint8_t> name_buffer(msg.size());
 
-    auto name_end = DNS::UnpackName(std::span {msg}, 0, std::span {name_buffer});
+    auto* name_end = DNS::UnpackName(std::span {msg}, 0, std::span {name_buffer});
 
     EXPECT_NE(name_end, nullptr);
 
@@ -63,7 +64,7 @@ TEST(dns_name, unpack_name_with_compression) {
 
     std::vector<uint8_t> name_buffer(name_expected.size());
 
-    auto name_end = DNS::UnpackName(std::span {msg}, msg_idx, std::span {name_buffer});
+    auto* name_end = DNS::UnpackName(std::span {msg}, msg_idx, std::span {name_buffer});
 
     EXPECT_NE(name_end, nullptr);
 
@@ -86,7 +87,7 @@ TEST(dns_name, unpack_name_loop) {
 
     std::vector<uint8_t> name_buffer(msg.size());
 
-    auto name_end = DNS::UnpackName(std::span {msg}, msg_ptr, std::span {name_buffer});
+    auto* name_end = DNS::UnpackName(std::span {msg}, msg_ptr, std::span {name_buffer});
 
     EXPECT_EQ(name_end, nullptr);
 }
@@ -102,7 +103,7 @@ TEST(dns_name, unpack_name_with_bad_pointer) {
 
     std::vector<uint8_t> name_buffer(msg.size());
 
-    auto name_end = DNS::UnpackName(std::span {msg}, msg_ptr, std::span {name_buffer});
+    auto* name_end = DNS::UnpackName(std::span {msg}, msg_ptr, std::span {name_buffer});
 
     EXPECT_EQ(name_end, nullptr);
 }
@@ -117,7 +118,7 @@ TEST(dns_name, unpack_name_with_incomplete_label) {
 
     std::vector<uint8_t> name_buffer(msg.size());
 
-    auto name_end = DNS::UnpackName(std::span {msg}, msg_ptr, std::span {name_buffer});
+    auto* name_end = DNS::UnpackName(std::span {msg}, msg_ptr, std::span {name_buffer});
 
     EXPECT_EQ(name_end, nullptr);
 }

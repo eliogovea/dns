@@ -6,13 +6,13 @@
 #include <dns/name.hpp>
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-    uint16_t msg_idx;
+    uint16_t msg_idx = 0;
 
     if (size < sizeof(msg_idx)) {
         return 0;
     }
 
-    msg_idx = *reinterpret_cast<const uint16_t *>(data);
+    msg_idx = *reinterpret_cast<const uint16_t *>(data);  // NOLINT
 
     data += sizeof(msg_idx);
     size -= sizeof(msg_idx);

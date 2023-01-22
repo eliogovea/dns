@@ -47,15 +47,15 @@ auto Decode(const std::uint8_t* msg_ptr, Header* header)  //
 auto DecodeName(const std::uint8_t* msg_ptr)  //
   -> std::optional<NameView>                  //
 {
-    auto name_end = SkipName(msg_ptr);
+    const auto* name_end = SkipName(msg_ptr);
     return name_end != nullptr ? std::make_optional(NameView {msg_ptr, name_end}) : std::nullopt;
 }
 
 auto DecodeName(const std::uint8_t* msg_ptr, Name* name)  //
   -> const std::uint8_t*                                  //
 {
-    auto name_end = SkipName(msg_ptr);
-    *name         = NameView(msg_ptr, name_end);
+    const auto* name_end = SkipName(msg_ptr);
+    *name                = NameView(msg_ptr, name_end);
     return name_end;
 }
 
@@ -102,7 +102,7 @@ auto Decode(const std::uint8_t* msg_ptr, std::uint16_t count, std::vector<Record
 auto Decode(const std::uint8_t* msg_ptr, const std::uint8_t* msg_end, std::uint8_t* value)  //
   -> const std::uint8_t*                                                                    //
 {
-    return (sizeof(*value) <= msg_end - msg_ptr)  //
+    return (static_cast<int>(sizeof(*value)) <= msg_end - msg_ptr)  //
              ? Decode(msg_ptr, value)
              : nullptr;
 }
@@ -110,7 +110,7 @@ auto Decode(const std::uint8_t* msg_ptr, const std::uint8_t* msg_end, std::uint8
 auto Decode(const std::uint8_t* msg_ptr, const std::uint8_t* msg_end, std::uint16_t* value)  //
   -> const std::uint8_t*                                                                     //
 {
-    return (sizeof(*value) <= msg_end - msg_ptr)  //
+    return (static_cast<int>(sizeof(*value)) <= msg_end - msg_ptr)  //
              ? Decode(msg_ptr, value)
              : nullptr;
 }
@@ -118,7 +118,7 @@ auto Decode(const std::uint8_t* msg_ptr, const std::uint8_t* msg_end, std::uint1
 auto Decode(const std::uint8_t* msg_ptr, const std::uint8_t* msg_end, std::uint32_t* value)  //
   -> const std::uint8_t*                                                                     //
 {
-    return (sizeof(*value) <= msg_end - msg_ptr)  //
+    return (static_cast<int>(sizeof(*value)) <= msg_end - msg_ptr)  //
              ? Decode(msg_ptr, value)
              : nullptr;
 }
@@ -126,7 +126,7 @@ auto Decode(const std::uint8_t* msg_ptr, const std::uint8_t* msg_end, std::uint3
 auto Decode(const std::uint8_t* msg_ptr, const std::uint8_t* msg_end, Header* header)  //
   -> const std::uint8_t*                                                               //
 {
-    return (sizeof(*header) <= msg_end - msg_ptr)  //
+    return (static_cast<int>(sizeof(*header)) <= msg_end - msg_ptr)  //
              ? Decode(msg_ptr, header)
              : nullptr;
 }
@@ -134,14 +134,14 @@ auto Decode(const std::uint8_t* msg_ptr, const std::uint8_t* msg_end, Header* he
 auto DecodeName(const std::uint8_t* msg_ptr, const std::uint8_t* msg_end)  //
   -> std::optional<NameView>                                               //
 {
-    auto name_end = SkipName(msg_ptr, msg_end);
+    const auto* name_end = SkipName(msg_ptr, msg_end);
     return name_end != nullptr ? std::make_optional(NameView {msg_ptr, name_end}) : std::nullopt;
 }
 
 auto DecodeName(const std::uint8_t* msg_ptr, const std::uint8_t* msg_end, Name* name)  //
   -> const std::uint8_t*                                                               //
 {
-    auto name_end = SkipName(std::span<const std::uint8_t> {msg_ptr, msg_end});
+    const auto* name_end = SkipName(std::span<const std::uint8_t> {msg_ptr, msg_end});
     if (name_end != nullptr) {
         *name = NameView {msg_ptr, name_end};
     }

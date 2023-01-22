@@ -48,8 +48,8 @@ auto ToNameView(const Name& name)  //
  * @param data
  * @return std::uint16_t
  */
-auto ReadNamePointer(const std::uint8_t* data)  //
-  -> std::uint16_t;                             //
+auto ReadNamePointer(const std::uint8_t* msg_ptr)  //
+  -> std::uint16_t;                                //
 
 /**
  * @brief Skip valid name
@@ -57,10 +57,10 @@ auto ReadNamePointer(const std::uint8_t* data)  //
  * @param data
  * @return const uint8_t*
  */
-auto SkipName(const std::uint8_t* data)  //
-  -> const uint8_t*;                     //
+auto SkipName(const std::uint8_t* msg_ptr)  //
+  -> const uint8_t*;                        //
 
-auto SkipName(const std::uint8_t* data, const std::uint8_t* data_end)  //
+auto SkipName(const std::uint8_t* msg_ptr, const std::uint8_t* msg_end)  //
   -> const std::uint8_t*;
 
 /**

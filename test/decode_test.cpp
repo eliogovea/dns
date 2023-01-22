@@ -22,7 +22,7 @@ TEST(dns, question) {
     };
 
     DNS::Question question;
-    auto question_end = DNS::Decode(msg.data(), &question);
+    const auto* question_end = DNS::Decode(msg.data(), &question);
 
     EXPECT_EQ(question_end, msg.data() + msg.size());
     EXPECT_EQ(DNS::ToNameView(question.name).data(), msg.data());
@@ -46,7 +46,7 @@ TEST(dns_decode, record) {
     };
 
     DNS::Record record;
-    auto record_end = DNS::Decode(msg.data(), &record);
+    const auto* record_end = DNS::Decode(msg.data(), &record);
 
     EXPECT_EQ(record_end - msg.data(), msg.size());
 }

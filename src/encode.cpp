@@ -32,7 +32,6 @@ auto EncodedSize(const Record& record)  //
            + sizeof(record.type)                    //
            + sizeof(record.class_)                  //
            + sizeof(record.time_to_live)            //
-           + sizeof(std::uint16_t)                  //
            + ToRecordDataView(record.data).size();  //
 }
 
@@ -116,7 +115,6 @@ auto Encode(std::uint8_t* msg_ptr, const Record& record)  //
     msg_ptr = Encode(msg_ptr, record.type);
     msg_ptr = Encode(msg_ptr, record.class_);
     msg_ptr = Encode(msg_ptr, record.time_to_live);
-    msg_ptr = Encode(msg_ptr, static_cast<std::uint16_t>(ToRecordDataView(record.data).size()));
     msg_ptr = Encode(msg_ptr, ToRecordDataView(record.data));
     return msg_ptr;
 }
@@ -126,13 +124,13 @@ auto Encode(std::uint8_t* msg_ptr, const Message& message)  //
 {
     msg_ptr = Encode(msg_ptr, MakeHeader(message));
     msg_ptr = Encode(msg_ptr, message.question);
-    for (auto record : message.answers) {
+    for (const auto& record : message.answers) {
         msg_ptr = Encode(msg_ptr, record);
     }
-    for (auto record : message.authority) {
+    for (const auto& record : message.authority) {
         msg_ptr = Encode(msg_ptr, record);
     }
-    for (auto record : message.additional) {
+    for (const auto& record : message.additional) {
         msg_ptr = Encode(msg_ptr, record);
     }
     return msg_ptr;

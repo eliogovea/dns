@@ -12,7 +12,7 @@ auto ToNameView(const Name& name)  //
 auto ReadNamePointer(const std::uint8_t* msg_ptr)  //
   -> std::uint16_t                                 //
 {
-    return ((*msg_ptr & LabelMaskValue) << 8) | *(msg_ptr + 1);
+    return (static_cast<uint16_t>(*msg_ptr & LabelMaskValue) << 8U) | static_cast<uint16_t>(*(msg_ptr + 1));  // NOLINT
 }
 
 auto SkipName(const std::uint8_t* msg_ptr)  //
@@ -70,17 +70,17 @@ auto UnpackName(const uint8_t* msg,      //
                 uint8_t* name_end)       //
   -> uint8_t*                            //
 {
-    auto msg_min = msg_ptr;
+    const auto* msg_min = msg_ptr;
 
     if (name_end - name > NameMaxSize) {
         name_end = name + NameMaxSize;
     }
 
-    while (sizeof(uint16_t) <= msg_end - msg_ptr && *msg_ptr != NameEnd) {
+    while (static_cast<int>(sizeof(uint16_t)) <= msg_end - msg_ptr && *msg_ptr != NameEnd) {
         switch (*msg_ptr & LabelMaskType) {
             case LabelTypeLength: {
                 auto bytes_need = sizeof(std::uint8_t) + *msg_ptr;
-                if (std::min(msg_end - msg_ptr, name_end - name) < bytes_need) {
+                if (std::min(msg_end - msg_ptr, name_end - name) < static_cast<std::ptrdiff_t>(bytes_need)) {
                     return nullptr;
                 }
                 name = std::copy(msg_ptr, msg_ptr + bytes_need, name);
@@ -154,8 +154,8 @@ auto NameToDots(const NameView& name)  //
     std::string name_dots;
     name_dots.reserve(name.size());
 
-    auto name_ptr = name.data();
-    auto name_end = name.data() + name.size();
+    const auto* name_ptr = name.data();
+    const auto* name_end = name.data() + name.size();
 
     while (name_ptr != name_end) {
         std::copy(name_ptr + sizeof(std::uint8_t),              //

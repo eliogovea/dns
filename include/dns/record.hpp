@@ -20,7 +20,7 @@ struct Record {
     RecordData data;
 };
 
-auto ToRecordDataView(const RecordData& name)  //
+auto ToRecordDataView(const RecordData& data)  //
   -> RecordDataView;                           //
 
 }  // namespace DNS

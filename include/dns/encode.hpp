@@ -9,8 +9,8 @@ auto EncodedSize(const Question& question)  //
 auto EncodedSize(const Record& record)  //
   -> std::size_t;                       //
 
-auto EncodedSize(const Message& record)  //
-  -> std::size_t;                        //
+auto EncodedSize(const Message& message)  //
+  -> std::size_t;                         //
 
 auto Encode(std::uint8_t* msg_ptr, std::uint8_t value)  //
   -> std::uint8_t*;                                     //
