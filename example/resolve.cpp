@@ -125,7 +125,10 @@ int main(int argc, char* argv[]) {
                 DNS::DotsToName(argv[1]),
                 DNS::TypeA,                         
                 DNS::ClassIN                        
-            }                                     
+            },
+            std::vector<DNS::Record>{},
+            std::vector<DNS::Record>{},
+            std::vector<DNS::Record>{}
         };
         // clang-format on
 
