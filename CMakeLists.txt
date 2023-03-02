@@ -25,11 +25,6 @@ target_compile_features(
     PUBLIC cxx_std_20
 )
 
-target_compile_options(
-    dns 
-    PRIVATE -Wall -Wextra -Wpedantic
-)
-
 option(DNS_BUILD_FUZZ_TESTS "Build fuzz tests" OFF)
 
 enable_testing()

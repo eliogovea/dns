@@ -8,11 +8,6 @@ target_link_libraries(
             dns::dns 
 )
 
-target_compile_options(
-    unit_tests 
-    PRIVATE -Wall -Wextra -Wpedantic
-)
-
 add_test(
   NAME unit_tests 
   COMMAND unit_tests
@@ -31,9 +26,6 @@ if (DNS_BUILD_FUZZ_TESTS)
     target_compile_options(
       name_fuzzer 
         PRIVATE -fsanitize=fuzzer,undefined,address
-                -Wall 
-                -Wextra 
-                -Wpedantic
     )
 
     add_executable(decode_fuzzer decode_fuzzer.cpp)
@@ -48,8 +40,5 @@ if (DNS_BUILD_FUZZ_TESTS)
     target_compile_options(
       decode_fuzzer 
         PRIVATE -fsanitize=fuzzer,undefined,address
-                -Wall 
-                -Wextra 
-                -Wpedantic
     )
 endif(DNS_BUILD_FUZZ_TESTS)
