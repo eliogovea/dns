@@ -15,8 +15,34 @@ TEST(dns_name, skip_name_without_compression) {
       0x03, 'x', 'y', 'z',  //
       0x00                  //
     };
-    const auto* name_end = DNS::SkipName(name);
-    EXPECT_EQ(name_end - name.data(), name.size());
+
+    EXPECT_EQ(DNS::SkipName(name) - name.data(), name.size());
+    EXPECT_EQ(DNS::SkipName(name.data()) - name.data(), name.size());
+    EXPECT_EQ(DNS::SkipName(name.data(), name.data() + name.size()) - name.data(), name.size());
+}
+
+TEST(dns_name, skip_name_with_compression) {
+    std::vector<uint8_t> name = {
+      0x03, 'a', 'b', 'c',  //
+      0x03, 'x', 'y', 'z',  //
+      0xc0, 0x00            // pointer to index 0
+    };
+
+    EXPECT_EQ(DNS::SkipName(name) - name.data(), name.size());
+    EXPECT_EQ(DNS::SkipName(name.data()) - name.data(), name.size());
+    EXPECT_EQ(DNS::SkipName(name.data(), name.data() + name.size()) - name.data(), name.size());
+}
+
+TEST(dns_name, skip_name_with_bad_label) {
+    std::vector<uint8_t> name = {
+      0x03, 'a', 'b', 'c',  //
+      0x03, 'x', 'y', 'z',  //
+      0x80, 0x00            // bad label
+    };
+
+    EXPECT_EQ(DNS::SkipName(name), nullptr);
+    EXPECT_EQ(DNS::SkipName(name.data()), nullptr);
+    EXPECT_EQ(DNS::SkipName(name.data(), name.data() + name.size()), nullptr);
 }
 
 TEST(dns_name, unpacke_name_without_compression) {
@@ -62,9 +88,9 @@ TEST(dns_name, unpack_name_with_compression) {
       0x00,                 //
     };
 
-    std::vector<uint8_t> name_buffer(name_expected.size());
+    std::array<uint8_t, DNS::NameMaxSize + 10> name_buffer;
 
-    auto* name_end = DNS::UnpackName(std::span {msg}, msg_idx, std::span {name_buffer});
+    const auto* name_end = DNS::UnpackName(std::span {msg}, msg_idx, std::span {name_buffer});
 
     EXPECT_NE(name_end, nullptr);
 
@@ -121,6 +147,31 @@ TEST(dns_name, unpack_name_with_incomplete_label) {
     auto* name_end = DNS::UnpackName(std::span {msg}, msg_ptr, std::span {name_buffer});
 
     EXPECT_EQ(name_end, nullptr);
+}
+
+TEST(dns_name, unpack_name_with_bad_label) {
+    const std::vector<uint8_t> msg = {
+      0x03, 'a', 'b', 'c',  //
+      0xa0, 0x00            //
+    };
+
+    const auto msg_ptr = size_t {0};
+
+    std::vector<uint8_t> name_buffer(msg.size());
+
+    auto* name_end = DNS::UnpackName(std::span {msg}, msg_ptr, std::span {name_buffer});
+
+    EXPECT_EQ(name_end, nullptr);
+}
+
+TEST(dns_name, valid_dots_name_with_long_label) {
+    std::string dots = std::string(DNS::LabelMaxLength, 'a') + ".xyz";
+    EXPECT_NE(DNS::DotsToName(dots), DNS::NameOwner{});
+}
+
+TEST(dns_name, invalid_dots_name_with_long_label) {
+    std::string dots = std::string(DNS::LabelMaxLength + 1, 'a') + ".xyz";
+    EXPECT_EQ(DNS::DotsToName(dots), DNS::NameOwner{});
 }
 
 TEST(dns_name, valid_name_to_dots) {
