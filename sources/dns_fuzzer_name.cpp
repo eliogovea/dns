@@ -3,6 +3,8 @@
 #include <span>
 #include <vector>
 
+#include <iostream>
+
 #include "dns_name.hpp"
 
 extern "C" int LLVMFuzzerTestOneInput(uint8_t const* data, size_t size)
@@ -13,16 +15,19 @@ extern "C" int LLVMFuzzerTestOneInput(uint8_t const* data, size_t size)
         return 0;
     }
 
-    msg_idx = *reinterpret_cast<uint16_t const*>(data);  // NOLINT
+    msg_idx = (msg_idx << 8) | *data;
+    data++;
+    size--;
 
-    data += sizeof(msg_idx);
-    size -= sizeof(msg_idx);
+    msg_idx = (msg_idx << 8) | *data;
+    data++;
+    size--;
 
-    if (size < msg_idx) {
+    if (size <= msg_idx) {
         return 0;
     }
 
-    std::vector<std::uint8_t> output(size);
+    auto output = std::vector<uint8_t>(size);
     DNS::UnpackName(std::span{data, size}, msg_idx, output);
 
     return 0;

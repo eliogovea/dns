@@ -91,27 +91,25 @@ if (DNS_ENABLE_FUZZING)
         )
     endfunction()
 
-    dns_add_fuzzer(dns_decode_fuzzer dns_decode_fuzzer.cpp)
-    dns_add_fuzzer(dns_name_fuzzer   dns_name_fuzzer.cpp)
+    dns_add_fuzzer(${PROJECT_NAME}_fuzzer_decode dns_fuzzer_decode.cpp)
+    dns_add_fuzzer(${PROJECT_NAME}_fuzzer_name   dns_fuzzer_name.cpp)
 
 endif (DNS_ENABLE_FUZZING)
 
 
 # apps
 
-add_executable(dns_resolver_testapp)
+add_executable(${PROJECT_NAME}_testapp_resolver)
 
 target_sources(
-    dns_resolver_testapp
-    PRIVATE dns_resolver_testapp.cpp
+    ${PROJECT_NAME}_testapp_resolver
+    PRIVATE dns_testapp_resolver.cpp
 )
 
 target_link_libraries(
-    dns_resolver_testapp
+    ${PROJECT_NAME}_testapp_resolver
     PRIVATE ${PROJECT_NAME}_static
 )
-
-# TODO
 
 # install
 
@@ -119,6 +117,7 @@ include(GNUInstallDirs)
 
 install(
     TARGETS                   ${PROJECT_NAME}_static
+                              ${PROJECT_NAME}_testapp_resolver
     EXPORT                    ${PROJECT_NAME}
     COMPONENT                 ${PROJECT_NAME}
     LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -128,6 +127,8 @@ install(
 
 install(
     TARGETS                   ${PROJECT_NAME}_unittest
+                              ${PROJECT_NAME}_fuzzer_decode
+                              ${PROJECT_NAME}_fuzzer_name
     COMPONENT                 ${PROJECT_NAME}
     CONFIGURATIONS            Debug
     EXPORT                    ${PROJECT_NAME}
