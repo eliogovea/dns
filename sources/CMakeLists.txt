@@ -1,16 +1,5 @@
-add_library(${PROJECT_NAME}_static STATIC)
-
-target_sources(
-    ${PROJECT_NAME}_static
-    PRIVATE dns_decode.cpp
-            dns_encode.cpp
-            dns_record.cpp
-            dns.cpp
-            dns_name.cpp
-)
-
 set(
-    PROJECT_PUBLIC_HEADERS
+    DNS_PUBLIC_HEADERS
     dns_record.hpp
     dns_encode.hpp
     dns_decode.hpp
@@ -18,10 +7,58 @@ set(
     dns.hpp
 )
 
+set(
+    DNS_PRIVATE_SOURCES
+    dns_decode.cpp
+    dns_encode.cpp
+    dns_record.cpp
+    dns.cpp
+    dns_name.cpp
+)
+
+# shared library
+
+add_library(${PROJECT_NAME}_shared SHARED)
+
+target_sources(
+    ${PROJECT_NAME}_shared
+    PRIVATE ${DNS_PRIVATE_SOURCES}
+)
+
+set_target_properties(
+    ${PROJECT_NAME}_shared
+    PROPERTIES OUTPUT_NAME                ${PROJECT_NAME}
+               POSITION_INDEPENDENT_CODE ON
+               PUBLIC_HEADER             "${DNS_PUBLIC_HEADERS}"
+)
+
+target_include_directories(
+    ${PROJECT_NAME}_shared
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+
+)
+
+target_compile_features(
+    ${PROJECT_NAME}_shared
+    PUBLIC cxx_std_20
+)
+
+add_library(${PROJECT_NAME}::${PROJECT_NAME}_shared ALIAS ${PROJECT_NAME}_shared)
+
+# static library
+
+add_library(${PROJECT_NAME}_static STATIC)
+
+target_sources(
+    ${PROJECT_NAME}_static
+    PRIVATE ${DNS_PRIVATE_SOURCES}
+)
+
 set_target_properties(
     ${PROJECT_NAME}_static
     PROPERTIES OUTPUT_NAME ${PROJECT_NAME}
-               PUBLIC_HEADER "${PROJECT_PUBLIC_HEADERS}"
+               PUBLIC_HEADER "${DNS_PUBLIC_HEADERS}"
 )
 
 target_include_directories(
@@ -76,11 +113,6 @@ if (DNS_ENABLE_FUZZING)
         target_link_libraries(
             ${fuzzer_name}
             PRIVATE ${PROJECT_NAME}_static
-        )
-
-        target_link_libraries(
-            ${fuzzer_name}
-            PRIVATE ${PROJECT_NAME}_static
                     -coverage
                     -fsanitize=fuzzer,undefined,address
         )
@@ -95,7 +127,6 @@ if (DNS_ENABLE_FUZZING)
     dns_add_fuzzer(${PROJECT_NAME}_fuzzer_name   dns_fuzzer_name.cpp)
 
 endif (DNS_ENABLE_FUZZING)
-
 
 # apps
 
@@ -116,7 +147,8 @@ target_link_libraries(
 include(GNUInstallDirs)
 
 install(
-    TARGETS                   ${PROJECT_NAME}_static
+    TARGETS                   ${PROJECT_NAME}_shared
+                              ${PROJECT_NAME}_static
                               ${PROJECT_NAME}_testapp_resolver
     EXPORT                    ${PROJECT_NAME}
     COMPONENT                 ${PROJECT_NAME}
@@ -138,7 +170,7 @@ install(
 )
 
 install(
-    EXPORT ${PROJECT_NAME}
-    NAMESPACE ${PROJECT_NAME}::
+    EXPORT      ${PROJECT_NAME}
+    NAMESPACE   ${PROJECT_NAME}::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}
 )
