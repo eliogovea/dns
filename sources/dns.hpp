@@ -2,10 +2,11 @@
 
 #include <cstdint>
 
-#include "record.hpp"
+#include "dns_record.hpp"
 
 namespace DNS {
-struct __attribute__((packed)) Header {
+struct __attribute__((packed)) Header
+{
     std::uint16_t id;
     std::uint16_t flags;
     std::uint16_t question_count;
@@ -14,16 +15,18 @@ struct __attribute__((packed)) Header {
     std::uint16_t additional_count;
 };
 
-struct Question {
-    Name name;
+struct Question
+{
+    Name          name;
     std::uint16_t type;
     std::uint16_t class_;
 };
 
-struct Message {
-    std::uint16_t id;
-    std::uint16_t flags;
-    Question question;
+struct Message
+{
+    std::uint16_t       id;
+    std::uint16_t       flags;
+    Question            question;
     std::vector<Record> answers;
     std::vector<Record> authority;
     std::vector<Record> additional;

@@ -1,0 +1,598 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 23,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "make-base",
+      "generator": "Unix Makefiles",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "DNS_ENABLE_FORMATTING": true
+      },
+      "hidden": true
+    },
+    {
+      "name": "make-gcc-base",
+      "inherits": ["make-base"],
+      "generator": "Unix Makefiles",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "g++-13",
+        "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wpedantic -Werror"
+      },
+      "hidden": true
+    },
+    {
+      "name": "make-gcc-debug",
+      "inherits": ["make-gcc-base"],
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O0 -g"
+      }
+    },
+    {
+      "name": "make-gcc-debug-coverage",
+      "inherits": ["make-gcc-base"],
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O0 -g -fprofile-arcs -ftest-coverage",
+        "DNS_ENABLE_COVERAGE": "ON",
+        "COVERAGE_LCOV": "lcov",
+        "COVERAGE_GCOV": "gcov-13",
+        "COVERAGE_GENHTML": "genhtml"
+      }
+    },
+    {
+      "name": "make-gcc-release",
+      "inherits": ["make-gcc-base"],
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_FLAGS_RELEASE": "-O2"
+      }
+    },
+    {
+      "name": "make-clang-base",
+      "inherits": ["make-base"],
+      "generator": "Unix Makefiles",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wpedantic -Werror",
+        "DNS_ENABLE_FUZZING": true
+      },
+      "hidden": true
+    },
+    {
+      "name": "make-clang-debug",
+      "inherits": ["make-clang-base"],
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O0 -g"
+      }
+    },
+    {
+      "name": "make-clang-debug-static-analysis",
+      "inherits": ["make-clang-base"],
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O0 -g",
+        "DNS_ENABLE_STATIC_ANALYSIS": true,
+        "STATIC_ANALYSIS_RUN_CLANG_TIDY": "run-clang-tidy"
+      }
+    },
+    {
+      "name": "make-clang-debug-sanitize-address",
+      "inherits": ["make-clang-base"],
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O0 -g -fsanitize=address -fno-omit-frame-pointer"
+      }
+    },
+    {
+      "name": "make-clang-debug-sanitize-leak",
+      "inherits": ["make-clang-base"],
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O0 -g -fsanitize=leak -fno-omit-frame-pointer"
+      }
+    },
+    {
+      "name": "make-clang-debug-sanitize-memory",
+      "inherits": ["make-clang-base"],
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O0 -g -fsanitize=memory -fno-omit-frame-pointer"
+      }
+    },
+    {
+      "name": "make-clang-debug-sanitize-thread",
+      "inherits": ["make-clang-base"],
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O0 -g -fsanitize=thread -fno-omit-frame-pointer"
+      }
+    },
+    {
+      "name": "make-clang-debug-sanitize-undefined",
+      "inherits": ["make-clang-base"],
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O0 -g -fsanitize=undefined -fno-omit-frame-pointer"
+      }
+    },
+    {
+      "name": "make-clang-release",
+      "inherits": ["make-clang-base"],
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_FLAGS_RELEASE": "-O2"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "make-gcc-debug",
+      "configurePreset": "make-gcc-debug",
+      "jobs": 0
+    },
+    {
+      "name": "make-gcc-release",
+      "configurePreset": "make-gcc-release",
+      "jobs": 0
+    },
+    {
+      "name": "make-gcc-debug-coverage-build-tests",
+      "configurePreset": "make-gcc-debug-coverage",
+      "jobs": 0
+    },
+    {
+      "name": "make-gcc-debug-coverage-generate-report",
+      "configurePreset": "make-gcc-debug-coverage",
+      "targets": ["coverage_lcov", "coverage_html"],
+      "jobs": 0
+    },
+    {
+      "name": "make-clang-debug",
+      "configurePreset": "make-clang-debug",
+      "jobs": 0
+    },
+    {
+      "name": "make-clang-debug-static-analysis",
+      "configurePreset": "make-clang-debug-static-analysis",
+      "targets": ["static-analysis-clang-tidy"],
+      "jobs": 0
+    },
+    {
+      "name": "make-clang-debug-sanitize-address",
+      "configurePreset": "make-clang-debug-sanitize-address",
+      "jobs": 0
+    },
+    {
+      "name": "make-clang-debug-sanitize-leak",
+      "configurePreset": "make-clang-debug-sanitize-leak",
+      "jobs": 0
+    },
+    {
+      "name": "make-clang-debug-sanitize-memory",
+      "configurePreset": "make-clang-debug-sanitize-memory",
+      "jobs": 0
+    },
+    {
+      "name": "make-clang-debug-sanitize-thread",
+      "configurePreset": "make-clang-debug-sanitize-thread",
+      "jobs": 0
+    },
+    {
+      "name": "make-clang-debug-sanitize-undefined",
+      "configurePreset": "make-clang-debug-sanitize-undefined",
+      "jobs": 0
+    },
+    {
+      "name": "make-clang-release",
+      "configurePreset": "make-clang-release",
+      "jobs": 0
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "make-gcc-debug",
+      "configurePreset": "make-gcc-debug",
+      "output": {
+        "verbosity": "extra",
+        "outputOnFailure": true
+      },
+      "execution": { "noTestsAction": "error", "stopOnFailure": true }
+    },
+    {
+      "name": "make-gcc-release",
+      "configurePreset": "make-gcc-release",
+      "output": {
+        "verbosity": "extra",
+        "outputOnFailure": true
+      },
+      "execution": { "noTestsAction": "error", "stopOnFailure": true }
+    },
+    {
+      "name": "make-gcc-debug-coverage",
+      "configurePreset": "make-gcc-debug-coverage",
+      "output": {
+        "verbosity": "extra",
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    },
+    {
+      "name": "make-clang-debug",
+      "configurePreset": "make-clang-debug",
+      "output": {
+        "verbosity": "extra",
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    },
+    {
+      "name": "make-clang-debug-sanitize-address",
+      "configurePreset": "make-clang-debug-sanitize-address",
+      "output": {
+        "verbosity": "extra",
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    },
+    {
+      "name": "make-clang-debug-sanitize-leak",
+      "configurePreset": "make-clang-debug-sanitize-leak",
+      "output": {
+        "verbosity": "extra",
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    },
+    {
+      "name": "make-clang-debug-sanitize-memory",
+      "configurePreset": "make-clang-debug-sanitize-memory",
+      "output": {
+        "verbosity": "extra",
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    },
+    {
+      "name": "make-clang-debug-sanitize-thread",
+      "configurePreset": "make-clang-debug-sanitize-thread",
+      "output": {
+        "verbosity": "extra",
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    },
+    {
+      "name": "make-clang-debug-sanitize-undefined",
+      "configurePreset": "make-clang-debug-sanitize-undefined",
+      "output": {
+        "verbosity": "extra",
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    },
+    {
+      "name": "make-clang-release",
+      "configurePreset": "make-clang-release",
+      "output": {
+        "verbosity": "extra",
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    }
+  ],
+  "packagePresets": [
+    {
+      "name": "make-gcc-debug",
+      "configurePreset": "make-gcc-debug",
+      "generators": ["TGZ"]
+    },
+    {
+      "name": "make-gcc-release",
+      "configurePreset": "make-gcc-release",
+      "generators": ["TGZ"]
+    },
+    {
+      "name": "make-clang-debug",
+      "configurePreset": "make-clang-debug",
+      "generators": ["TGZ"]
+    },
+    {
+      "name": "make-clang-debug-sanitize-address",
+      "configurePreset": "make-clang-debug-sanitize-address",
+      "generators": ["TGZ"]
+    },
+    {
+      "name": "make-clang-debug-sanitize-leak",
+      "configurePreset": "make-clang-debug-sanitize-leak",
+      "generators": ["TGZ"]
+    },
+    {
+      "name": "make-clang-debug-sanitize-memory",
+      "configurePreset": "make-clang-debug-sanitize-memory",
+      "generators": ["TGZ"]
+    },
+    {
+      "name": "make-clang-debug-sanitize-thread",
+      "configurePreset": "make-clang-debug-sanitize-thread",
+      "generators": ["TGZ"]
+    },
+    {
+      "name": "make-clang-debug-sanitize-undefined",
+      "configurePreset": "make-clang-debug-sanitize-undefined",
+      "generators": ["TGZ"]
+    },
+    {
+      "name": "make-clang-release",
+      "configurePreset": "make-clang-release",
+      "generators": ["TGZ"]
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "make-gcc-debug",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "make-gcc-debug"
+        },
+        {
+          "type": "build",
+          "name": "make-gcc-debug"
+        },
+        {
+          "type": "test",
+          "name": "make-gcc-debug"
+        },
+        {
+          "type": "package",
+          "name": "make-gcc-debug"
+        }
+      ]
+    },
+    {
+      "name": "make-gcc-release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "make-gcc-release"
+        },
+        {
+          "type": "build",
+          "name": "make-gcc-release"
+        },
+        {
+          "type": "test",
+          "name": "make-gcc-release"
+        },
+        {
+          "type": "package",
+          "name": "make-gcc-release"
+        }
+      ]
+    },
+    {
+      "name": "make-gcc-debug-coverage",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "make-gcc-debug-coverage"
+        },
+        {
+          "type": "build",
+          "name": "make-gcc-debug-coverage-build-tests"
+        },
+        {
+          "type": "test",
+          "name": "make-gcc-debug-coverage"
+        },
+        {
+          "type": "build",
+          "name": "make-gcc-debug-coverage-generate-report"
+        }
+      ]
+    },
+    {
+      "name": "make-clang-debug",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "make-clang-debug"
+        },
+        {
+          "type": "build",
+          "name": "make-clang-debug"
+        },
+        {
+          "type": "test",
+          "name": "make-clang-debug"
+        },
+        {
+          "type": "package",
+          "name": "make-clang-debug"
+        }
+      ]
+    },
+    {
+      "name": "static-analysis",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "make-clang-debug-static-analysis"
+        },
+        {
+          "type": "build",
+          "name": "make-clang-debug-static-analysis"
+        }
+      ]
+    },
+    {
+      "name": "make-clang-debug-sanitize-address",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "make-clang-debug-sanitize-address"
+        },
+        {
+          "type": "build",
+          "name": "make-clang-debug-sanitize-address"
+        },
+        {
+          "type": "test",
+          "name": "make-clang-debug-sanitize-address"
+        },
+        {
+          "type": "package",
+          "name": "make-clang-debug-sanitize-address"
+        }
+      ]
+    },
+    {
+      "name": "make-clang-debug-sanitize-leak",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "make-clang-debug-sanitize-leak"
+        },
+        {
+          "type": "build",
+          "name": "make-clang-debug-sanitize-leak"
+        },
+        {
+          "type": "test",
+          "name": "make-clang-debug-sanitize-leak"
+        },
+        {
+          "type": "package",
+          "name": "make-clang-debug-sanitize-leak"
+        }
+      ]
+    },
+    {
+      "name": "make-clang-debug-sanitize-memory",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "make-clang-debug-sanitize-memory"
+        },
+        {
+          "type": "build",
+          "name": "make-clang-debug-sanitize-memory"
+        },
+        {
+          "type": "test",
+          "name": "make-clang-debug-sanitize-memory"
+        },
+        {
+          "type": "package",
+          "name": "make-clang-debug-sanitize-memory"
+        }
+      ]
+    },
+    {
+      "name": "make-clang-debug-sanitize-thread",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "make-clang-debug-sanitize-thread"
+        },
+        {
+          "type": "build",
+          "name": "make-clang-debug-sanitize-thread"
+        },
+        {
+          "type": "test",
+          "name": "make-clang-debug-sanitize-thread"
+        },
+        {
+          "type": "package",
+          "name": "make-clang-debug-sanitize-thread"
+        }
+      ]
+    },
+    {
+      "name": "make-clang-debug-sanitize-undefined",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "make-clang-debug-sanitize-undefined"
+        },
+        {
+          "type": "build",
+          "name": "make-clang-debug-sanitize-undefined"
+        },
+        {
+          "type": "test",
+          "name": "make-clang-debug-sanitize-undefined"
+        },
+        {
+          "type": "package",
+          "name": "make-clang-debug-sanitize-undefined"
+        }
+      ]
+    },
+    {
+      "name": "make-clang-release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "make-clang-release"
+        },
+        {
+          "type": "build",
+          "name": "make-clang-release"
+        },
+        {
+          "type": "test",
+          "name": "make-clang-release"
+        },
+        {
+          "type": "package",
+          "name": "make-clang-release"
+        }
+      ]
+    }
+  ]
+}

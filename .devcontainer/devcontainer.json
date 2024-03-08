@@ -1,0 +1,94 @@
+// For format details, see https://aka.ms/vscode-remote/devcontainer.json or this file's README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.159.0/containers/cpp
+{
+  "name": "C++",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+      "USERNAME": "vscode",
+      "USER_UID": "1000",
+      "USER_GID": "1000",
+      "LLVM_VERSION": "17"
+    }
+  },
+  "capAdd": ["SYS_PTRACE"],
+  "securityOpt": ["seccomp=unconfined"],
+  "customizations": {
+    "vscode": {
+      // Add the IDs of extensions you want installed when the container is created.
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-themes",
+        "aaron-bond.better-comments",
+        "esbenp.prettier-vscode",
+        "twxs.cmake",
+        "ms-vscode.cmake-tools",
+        "jeff-hykin.better-cpp-syntax",
+        "eamodio.gitlens",
+        "donjayamanne.githistory",
+        "mhutchie.git-graph",
+        "cschlosser.doxdocgen",
+        "ms-azuretools.vscode-docker",
+        "ms-vscode.cpptools-extension-pack"
+      ],
+      // Set *default* container specific settings.json values on container create.
+      "settings": {
+        "editor.tabSize": 4,
+        "editor.insertSpaces": true,
+        "editor.detectIndentation": true,
+        "editor.indentSize": "tabSize",
+        "editor.fontSize": 14,
+        "editor.formatOnSave": true,
+        "editor.lineNumbers": "on",
+        "editor.minimap.enabled": false,
+        "editor.renderLineHighlight": "all",
+        "editor.tabCompletion": "on",
+        "editor.rulers": [120],
+        "C_Cpp.clang_format_path": "/usr/bin/clang-format-19",
+        "C_Cpp.clang_format_style": "file",
+        "C_Cpp.clang_format_fallbackStyle": "none",
+        "C_Cpp.codeAnalysis.clangTidy.config": "",
+        "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+        "C_Cpp.codeAnalysis.runAutomatically": false,
+        "C_Cpp.codeAnalysis.clangTidy.useBuildPath": true,
+        "C_Cpp.codeAnalysis.clangTidy.path": "/usr/lib/llvm-19/bin/clang-tidy",
+        "C_Cpp.codeAnalysis.clangTidy.codeAction.formatFixes": true,
+        "C_Cpp.codeAnalysis.clangTidy.headerFilter": null,
+        "C_Cpp.codeAnalysis.clangTidy.fallbackConfig": "",
+        "C_Cpp.default.compilerArgs": [],
+        "C_Cpp.default.compileCommands": "${workspaceFolder}/build/make-clang-debug/compile_commands.json",
+        "C_Cpp.default.compilerPath": "/usr/lib/llvm-19/bin/clang",
+        "C_Cpp.default.cppStandard": "c++20",
+        "C_Cpp.default.cStandard": "c17",
+        "C_Cpp.default.includePath": [
+          "${workspaceFolder}/**",
+          "/usr/include/c++/11"
+        ],
+        "C_Cpp.default.intelliSenseMode": "linux-clang-x64",
+        "C_Cpp.enhancedColorization": "enabled",
+        "C_Cpp.errorSquiggles": "enabled",
+        "C_Cpp.hover": "default",
+        "C_Cpp.formatting": "clangFormat",
+        "files.trimTrailingWhitespace": true,
+        "files.insertFinalNewline": true,
+        "files.trimFinalNewlines": true,
+        "json.format.enable": true,
+        "json.format.keepLines": false,
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "bash"
+          }
+        },
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "[json]": {
+          "editor.quickSuggestions": {
+            "strings": true
+          },
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.suggest.insertMode": "replace",
+          "editor.formatOnSave": true
+        }
+      }
+    }
+  }
+}
