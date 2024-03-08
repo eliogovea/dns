@@ -1,5 +1,7 @@
 #include "dns_record.hpp"
 
+#include <variant>
+
 namespace DNS {
 auto ToRecordDataView(RecordData const& data) -> RecordDataView
 {

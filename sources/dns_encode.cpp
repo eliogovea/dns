@@ -1,9 +1,16 @@
 #include "dns_encode.hpp"
 
-#include <arpa/inet.h>
+#include <netinet/in.h>
 
+#include <cstdint>
 #include <cstring>
+#include <iterator>
 #include <numeric>
+#include <span>
+
+#include "dns.hpp"
+#include "dns_name.hpp"
+#include "dns_record.hpp"
 
 namespace DNS {
 Header MakeHeader(Message const& message)

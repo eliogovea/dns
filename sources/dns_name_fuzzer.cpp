@@ -1,5 +1,6 @@
-#include <iterator>
-#include <utility>
+#include <cstddef>
+#include <cstdint>
+#include <span>
 #include <vector>
 
 #include "dns_name.hpp"

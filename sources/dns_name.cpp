@@ -1,6 +1,12 @@
 #include "dns_name.hpp"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+#include <span>
+#include <string>
+#include <variant>
 
 namespace DNS {
 auto ToNameView(Name const& name) -> NameView

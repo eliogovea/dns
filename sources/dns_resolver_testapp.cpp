@@ -1,17 +1,20 @@
-#include <linux/socket.h>
 
-#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 
 #include <array>
 #include <cstdint>
 #include <cstdlib>
-#include <format>
 #include <iomanip>
 #include <iostream>
+#include <span>
+#include <vector>
 
 #include "dns.hpp"
 #include "dns_decode.hpp"
 #include "dns_encode.hpp"
+#include "dns_name.hpp"
+#include "dns_record.hpp"
 
 void HexDump(std::ostream& output, std::span<std::uint8_t const> const& data)
 {

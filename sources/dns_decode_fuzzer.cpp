@@ -1,7 +1,7 @@
-#include <iterator>
-#include <utility>
-#include <vector>
+#include <cstddef>
+#include <cstdint>
 
+#include "dns.hpp"
 #include "dns_decode.hpp"
 
 extern "C" int LLVMFuzzerTestOneInput(uint8_t const* data, size_t size)

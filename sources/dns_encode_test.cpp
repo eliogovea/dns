@@ -1,4 +1,11 @@
+#include <cstdint>
+#include <iterator>
+#include <vector>
+
 #include <gtest/gtest.h>
+
+#include "dns.hpp"
+#include "dns_record.hpp"
 
 #include "dns_encode.hpp"
 

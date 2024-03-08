@@ -1,6 +1,12 @@
+#include <cstdint>
+#include <vector>
+
 #include <gtest/gtest.h>
 
+#include "dns.hpp"
 #include "dns_decode.hpp"
+#include "dns_name.hpp"
+#include "dns_record.hpp"
 
 TEST(dns_decoder, decode_16_bits_integer)
 {

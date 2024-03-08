@@ -10,7 +10,6 @@
       "name": "make-base",
       "generator": "Unix Makefiles",
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
         "DNS_ENABLE_FORMATTING": true
       },

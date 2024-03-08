@@ -1,11 +1,16 @@
 #include "dns_decode.hpp"
 
-#include <arpa/inet.h>
+#include <netinet/in.h>
 
+#include <cstdint>
 #include <cstring>
 #include <optional>
+#include <span>
+#include <vector>
 
+#include "dns.hpp"
 #include "dns_name.hpp"
+#include "dns_record.hpp"
 
 namespace DNS {
 auto Decode(std::uint8_t const* msg_ptr,
